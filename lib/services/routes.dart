@@ -3,6 +3,7 @@ import 'package:busyman/screens/login/loginscreen.dart';
 import 'package:busyman/screens/login/otp_verfication.dart';
 import 'package:busyman/screens/reminder/addreminder.dart';
 import 'package:busyman/screens/reminder/allreminders.dart';
+import 'package:busyman/screens/reminder/editreminder.dart';
 import 'package:busyman/screens/tasks/addtaskscreen.dart';
 import 'package:busyman/screens/tasks/alltasks.dart';
 import 'package:busyman/screens/tasks/editTaskScreen.dart';
@@ -39,6 +40,11 @@ class RouteGenerator {
       case '/EditTask':
         return MaterialPageRoute(
             builder: (_) => EditTask(
+                  args! as String,
+                ));
+      case '/EditReminder':
+        return MaterialPageRoute(
+            builder: (_) => EditReminder(
                   args! as String,
                 ));
       default:

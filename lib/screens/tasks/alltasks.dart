@@ -46,8 +46,6 @@ class _AllTasksState extends State<AllTasks> {
     final upcomingtasks = taskProvider.upcomingtasks;
     final pendingtasks = taskProvider.pendingtasks;
     final completedtasks = taskProvider.completedtasks;
-    print(ongoingtasks.length.toString() + 'line 46');
-    print(pendingtasks.length);
     _app = App(context);
     return Scaffold(
       body: Column(

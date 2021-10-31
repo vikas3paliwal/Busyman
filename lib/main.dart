@@ -1,3 +1,4 @@
+import 'package:busyman/provider/reminderprovider.dart';
 import 'package:busyman/provider/taskprovider.dart';
 import 'package:busyman/screens/login/loginscreen.dart';
 import 'package:busyman/screens/tasks/alltasks.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => TaskProvider()),
+        ChangeNotifierProvider(create: (ctx) => Reminderprovider())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

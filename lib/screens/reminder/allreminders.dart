@@ -1,6 +1,8 @@
+import 'package:busyman/provider/reminderprovider.dart';
 import 'package:busyman/screens/reminder/reminderwidget.dart';
 import 'package:busyman/services/sizeconfig.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AllReminders extends StatefulWidget {
   const AllReminders({Key? key}) : super(key: key);
@@ -13,16 +15,38 @@ class _AllRemindersState extends State<AllReminders>
     with TickerProviderStateMixin {
   late App _app;
   List<bool> tasks = [false];
+  bool initial = true;
+  bool isLoading = false;
   late TabController _controller;
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    if (initial) {
+      setState(() {
+        isLoading = true;
+      });
+      Future.delayed(Duration.zero).whenComplete(() async =>
+          await Provider.of<Reminderprovider>(context, listen: false)
+              .fetchReminders()
+              .whenComplete(() => setState(() {
+                    isLoading = false;
+                  })));
+      _controller = TabController(length: 6, vsync: this);
+    }
+    initial = false;
+    super.didChangeDependencies();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-    _controller = TabController(length: 6, vsync: this);
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final reminders = Provider.of<Reminderprovider>(context).reminders;
     _app = App(context);
     return Scaffold(
       body: Column(
@@ -215,45 +239,31 @@ class _AllRemindersState extends State<AllReminders>
           SizedBox(
             height: _app.appVerticalPadding(3.5),
           ),
+          const Text(
+            '4/10 done',
+            style: TextStyle(
+                color: Color(0xff297687),
+                fontSize: 14,
+                fontWeight: FontWeight.w400),
+          ),
           Expanded(
-              child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    height: _app.appVerticalPadding(3.5),
-                  ),
-                  const Text(
-                    '4/10 done',
-                    style: TextStyle(
-                        color: Color(0xff297687),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  SizedBox(
-                    height: _app.appVerticalPadding(1.2),
-                  ),
-                  const ReminderWidget(),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const ReminderWidget(),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const ReminderWidget(),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const ReminderWidget(),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                ],
-              ),
-            ),
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ListView.builder(
+                itemCount: reminders.length,
+                itemBuilder: (ctx, i) {
+                  return reminders
+                      .map((e) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              ReminderWidget(id: e.id),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                            ],
+                          ))
+                      .toList()[i];
+                }),
           )),
         ],
       ),

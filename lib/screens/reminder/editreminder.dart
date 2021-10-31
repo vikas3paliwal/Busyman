@@ -6,14 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AddReminder extends StatefulWidget {
-  const AddReminder({Key? key}) : super(key: key);
+class EditReminder extends StatefulWidget {
+  final String id;
+  EditReminder(this.id);
 
   @override
-  _AddReminderState createState() => _AddReminderState();
+  _EditReminderState createState() => _EditReminderState();
 }
 
-class _AddReminderState extends State<AddReminder> {
+class _EditReminderState extends State<EditReminder> {
   late App _app;
   final _reminderformkey = GlobalKey<FormState>();
   TextEditingController _namecontroller = TextEditingController();
@@ -21,7 +22,8 @@ class _AddReminderState extends State<AddReminder> {
   TextEditingController _timecontroller = TextEditingController();
   late String category;
   List<bool> categorySelected = [false, false, false, false];
-
+  bool initial = true;
+  bool isLoading = false;
   DateFormat formatter = DateFormat('dd MMM, yyyy');
   @override
   void dispose() {
@@ -31,6 +33,21 @@ class _AddReminderState extends State<AddReminder> {
     _timecontroller.dispose();
 
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (initial) {
+      final reminder = Provider.of<Reminderprovider>(context, listen: false)
+          .findReminder(widget.id);
+      _namecontroller.text = reminder.reminderName;
+      _datecontroller.text = reminder.date;
+      _timecontroller.text = reminder.time;
+      category = reminder.category;
+    }
+    initial = false;
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
   }
 
   @override
@@ -346,39 +363,50 @@ class _AddReminderState extends State<AddReminder> {
                   SizedBox(
                     height: _app.appVerticalPadding(25),
                   ),
-                  TextButton(
-                      onPressed: () {
-                        if (_reminderformkey.currentState!.validate()) {
-                          Reminder reminder = Reminder(
-                            id: UniqueKey().toString(),
-                            reminderName: _namecontroller.text,
-                            date: _datecontroller.text,
-                            time: _timecontroller.text,
-                            category: category,
-                          );
-                          reminderProvider.addReminder(reminder);
+                  isLoading
+                      ? const Center(child: const CircularProgressIndicator())
+                      : TextButton(
+                          onPressed: () {
+                            if (_reminderformkey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              Reminder reminder = Reminder(
+                                id: widget.id,
+                                reminderName: _namecontroller.text,
+                                date: _datecontroller.text,
+                                time: _timecontroller.text,
+                                category: category,
+                              );
+                              reminderProvider
+                                  .editReminder(reminder)
+                                  .whenComplete(() {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              });
 
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 40,
-                        child: const Center(
-                          child: const Text("Done",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                              )),
-                        ),
-                        decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: const [
-                              Color(0xff205072),
-                              Color(0xff2E8C92)
-                            ]),
-                            borderRadius: BorderRadius.circular(15)),
-                      ))
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 40,
+                            child: const Center(
+                              child: const Text("Done",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                            ),
+                            decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: const [
+                                  Color(0xff205072),
+                                  Color(0xff2E8C92)
+                                ]),
+                                borderRadius: BorderRadius.circular(15)),
+                          ))
                 ],
               ),
             )),

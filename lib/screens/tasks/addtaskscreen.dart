@@ -95,7 +95,9 @@ class _AddTaskState extends State<AddTask> {
                   .toList()[i]),
         ),
       ),
-    );
+    ).then((value) {
+      setState(() {});
+    });
     return contact;
   }
 
@@ -358,9 +360,10 @@ class _AddTaskState extends State<AddTask> {
                       ? TextButton(
                           onPressed: () async {
                             await _fetchContacts();
-                            setState(() async {
-                              workingFor = await showContacts(context);
-                            });
+                            await showContacts(context)
+                                .then((value) => setState(() {
+                                      workingFor = value;
+                                    }));
                           },
                           child: Container(
                             height: _app.appHeight(4),
@@ -377,7 +380,7 @@ class _AddTaskState extends State<AddTask> {
                           ))
                       : SizedBox(
                           height: _app.appHeight(10),
-                          width: _app.appWidth(20),
+                          width: _app.appWidth(50),
                           child: ListView.builder(
                               itemCount: workingFor.length,
                               itemBuilder: (ctx, i) {
@@ -409,9 +412,10 @@ class _AddTaskState extends State<AddTask> {
                       ? TextButton(
                           onPressed: () async {
                             await _fetchContacts();
-                            setState(() async {
-                              allocatedTo = await showContacts(context);
-                            });
+                            await showContacts(context)
+                                .then((value) => setState(() {
+                                      allocatedTo = value;
+                                    }));
                           },
                           child: Container(
                             height: _app.appHeight(4),
@@ -428,7 +432,7 @@ class _AddTaskState extends State<AddTask> {
                           ))
                       : SizedBox(
                           height: _app.appHeight(10),
-                          width: _app.appWidth(20),
+                          width: _app.appWidth(50),
                           child: ListView.builder(
                               itemCount: allocatedTo.length,
                               itemBuilder: (ctx, i) {

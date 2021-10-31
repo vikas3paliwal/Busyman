@@ -30,6 +30,7 @@ class _EditTaskState extends State<EditTask> {
   late List<String> allocatedTo = [];
   bool priority = false;
   bool initial = true;
+  bool isLoading = false;
   DateFormat formatter = DateFormat('dd MMM, yyyy');
   List<Contact>? _contacts;
   bool _permissionDenied = false;
@@ -488,46 +489,61 @@ class _EditTaskState extends State<EditTask> {
                           })
                     ],
                   ),
-                  TextButton(
-                      onPressed: () {
-                        print(category);
-                        if (_formKey.currentState!.validate()) {
-                          Task task = Task(
-                              id: UniqueKey().toString(),
-                              taskName: _namecontroller.text,
-                              description: _descriptioncontroller.text,
-                              startDate: _startDatecontroller.text,
-                              startTime: _startTimecontroller.text,
-                              endDate: _endDatecontroller.text,
-                              endTime: _endTimecontroller.text,
-                              workingFor: workingFor,
-                              allocatedTo: allocatedTo,
-                              priority: priority,
-                              category: category,
-                              completed: false);
-                          taskProvider
-                              .editTask(task)
-                              .whenComplete(() => Navigator.of(context).pop());
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 40,
-                        child: const Center(
-                          child: const Text("Done",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                              )),
-                        ),
-                        decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: const [
-                              Color(0xff205072),
-                              Color(0xff2E8C92)
-                            ]),
-                            borderRadius: BorderRadius.circular(15)),
-                      ))
+                  isLoading
+                      ? const Center(child: const CircularProgressIndicator())
+                      : TextButton(
+                          onPressed: () {
+                            print(category);
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              Task task = Task(
+                                  id: widget.id,
+                                  taskName: _namecontroller.text,
+                                  description: _descriptioncontroller.text,
+                                  startDate: _startDatecontroller.text,
+                                  startTime: _startTimecontroller.text,
+                                  endDate: _endDatecontroller.text,
+                                  endTime: _endTimecontroller.text,
+                                  workingFor: workingFor,
+                                  allocatedTo: allocatedTo,
+                                  priority: priority,
+                                  category: category,
+                                  completed: Provider.of<TaskProvider>(context,
+                                          listen: false)
+                                      .findTask(widget.id)
+                                      .completed);
+                              task.status = Provider.of<TaskProvider>(context,
+                                      listen: false)
+                                  .findTask(widget.id)
+                                  .status;
+                              taskProvider.editTask(task).whenComplete(() {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Navigator.of(context).pop();
+                              });
+                            }
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 40,
+                            child: const Center(
+                              child: const Text("Done",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                            ),
+                            decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: const [
+                                  Color(0xff205072),
+                                  Color(0xff2E8C92)
+                                ]),
+                                borderRadius: BorderRadius.circular(15)),
+                          ))
                 ],
               ),
             )),

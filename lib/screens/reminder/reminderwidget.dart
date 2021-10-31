@@ -1,13 +1,17 @@
+import 'package:busyman/provider/reminderprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class ReminderWidget extends StatelessWidget {
-  const ReminderWidget({
-    Key? key,
-  }) : super(key: key);
+  String? id;
+  ReminderWidget({this.id});
 
   @override
   Widget build(BuildContext context) {
+    final reminderProvider =
+        Provider.of<Reminderprovider>(context, listen: false);
+    final reminder = reminderProvider.findReminder(id!);
     return Slidable(
       actionPane: const SlidableDrawerActionPane(),
       secondaryActions: [
@@ -15,6 +19,8 @@ class ReminderWidget extends StatelessWidget {
             icon: Icons.edit,
             onTap: () {
               //editing logic
+              Navigator.of(context)
+                  .pushNamed('/EditReminder', arguments: reminder.id);
             }),
         IconSlideAction(
           icon: Icons.delete,
@@ -33,15 +39,15 @@ class ReminderWidget extends StatelessWidget {
                     actions: [
                       ElevatedButton(
                           onPressed: () {
-                            //deleting logic
+                            reminderProvider.deleteReminder(id!);
                             Navigator.of(context).pop();
                           },
-                          child: Text('Yes')),
+                          child: const Text('Yes')),
                       ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text('No'))
+                          child: const Text('No'))
                     ],
                   );
                 });
@@ -53,27 +59,27 @@ class ReminderWidget extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         tileColor: const Color(0xffF3F3F3),
         dense: true,
-        title: const Text(
-          'Reminder Name Comes Here',
+        title: Text(
+          reminder.reminderName,
           overflow: TextOverflow.ellipsis,
           softWrap: false,
-          style: TextStyle(
+          style: const TextStyle(
               color: const Color(0xff297687),
               fontWeight: FontWeight.w500,
               fontSize: 16),
         ),
         subtitle: Row(
-          children: const [
-            Icon(
+          children: [
+            const Icon(
               Icons.watch_later_outlined,
               size: 12,
             ),
-            SizedBox(
+            const SizedBox(
               width: 3,
             ),
             Text(
-              '02:00pm',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+              reminder.time,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
               softWrap: true,
               overflow: TextOverflow.ellipsis,
             ),
@@ -82,10 +88,11 @@ class ReminderWidget extends StatelessWidget {
         trailing: Container(
           height: 30,
           width: 60,
-          child: const Center(
-              child: const Text(
-            'Birthday',
-            style: TextStyle(color: const Color(0xff858585), fontSize: 10),
+          child: Center(
+              child: Text(
+            reminder.category,
+            style:
+                const TextStyle(color: const Color(0xff858585), fontSize: 10),
           )),
           decoration: BoxDecoration(
               border: Border.all(color: const Color(0xff297687)),

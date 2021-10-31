@@ -49,22 +49,30 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> deleteTask(String id) async {
-    await FirebaseDatabase.instance
-        .reference()
-        .child('Users/641Wbl9iOLe09ecDYKG7qUKtfz92/Tasks/$id')
-        .remove();
-    _tasks.removeWhere((element) => element.id == id);
-    notifyListeners();
+    try {
+      await FirebaseDatabase.instance
+          .reference()
+          .child('Users/641Wbl9iOLe09ecDYKG7qUKtfz92/Tasks/$id')
+          .remove();
+      _tasks.removeWhere((element) => element.id == id);
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   Future<void> editTask(Task task) async {
-    await FirebaseDatabase.instance
-        .reference()
-        .child('Users/641Wbl9iOLe09ecDYKG7qUKtfz92/Tasks/')
-        .update({task.id: task.toJson()});
-    int index = _tasks.indexWhere((element) => element.id == task.id);
-    _tasks[index] = task;
-    notifyListeners();
+    try {
+      await FirebaseDatabase.instance
+          .reference()
+          .child('Users/641Wbl9iOLe09ecDYKG7qUKtfz92/Tasks/${task.id}')
+          .update(task.toJson());
+      int index = _tasks.indexWhere((element) => element.id == task.id);
+      _tasks[index] = task;
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   Future<void> fetchTasks() async {

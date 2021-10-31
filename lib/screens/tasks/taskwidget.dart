@@ -1,5 +1,6 @@
 import 'package:busyman/models/task.dart';
 import 'package:busyman/provider/taskprovider.dart';
+import 'package:busyman/screens/tasks/editTaskScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -131,7 +132,8 @@ class _TaskWidgetState extends State<TaskWidget> {
                   secondaryActions: [
                     IconSlideAction(
                       icon: Icons.edit,
-                      onTap: () => Navigator.of(context).pushNamed('/EditTask'),
+                      onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => EditTask(e.id))),
                     ),
                     IconSlideAction(
                       icon: Icons.delete,
