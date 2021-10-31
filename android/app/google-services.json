@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "787742872912",
+    "project_id": "busyman-808b9",
+    "storage_bucket": "busyman-808b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:787742872912:android:78bbd4a04074c32ca98855",
+        "android_client_info": {
+          "package_name": "com.example.busyman"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "787742872912-egt8n8rmeh4ohrbg5h2salna3go50q5r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.busyman",
+            "certificate_hash": "28076218a5907f7d8ba4519973c6506c36446480"
+          }
+        },
+        {
+          "client_id": "787742872912-pt4lpff3ln92uj45gl5auap284d50rcp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhtw6ySlCJnTicOvbVSI1UoDwNm7yJv8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "787742872912-pt4lpff3ln92uj45gl5auap284d50rcp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
