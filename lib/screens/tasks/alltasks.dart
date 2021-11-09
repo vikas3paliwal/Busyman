@@ -88,13 +88,6 @@ class _AllTasksState extends State<AllTasks> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                     ),
-                                    Text(
-                                      '3/6 done',
-                                      style: TextStyle(
-                                          color: Color(0xff297687),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(
@@ -112,7 +105,7 @@ class _AllTasksState extends State<AllTasks> {
                                   onPressed: () {
                                     Navigator.of(context).pushNamed(
                                         '/SectionTask',
-                                        arguments: Status.Ongoing);
+                                        arguments: [Status.Ongoing, "Ongoing"]);
                                   },
                                   child: const Text(
                                     'show all',
@@ -145,13 +138,6 @@ class _AllTasksState extends State<AllTasks> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                     ),
-                                    Text(
-                                      '3/6 done',
-                                      style: TextStyle(
-                                          color: Color(0xff297687),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(
@@ -169,7 +155,7 @@ class _AllTasksState extends State<AllTasks> {
                                   onPressed: () {
                                     Navigator.of(context).pushNamed(
                                         '/SectionTask',
-                                        arguments: Status.Pending);
+                                        arguments: [Status.Pending, "Pending"]);
                                   },
                                   child: const Text(
                                     'show all',
@@ -202,13 +188,6 @@ class _AllTasksState extends State<AllTasks> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                     ),
-                                    Text(
-                                      '3/6 done',
-                                      style: TextStyle(
-                                          color: Color(0xff297687),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(
@@ -224,9 +203,11 @@ class _AllTasksState extends State<AllTasks> {
                                       ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pushNamed(
-                                        '/SectionTask',
-                                        arguments: Status.Upcoming);
+                                    Navigator.of(context)
+                                        .pushNamed('/SectionTask', arguments: [
+                                      Status.Upcoming,
+                                      "Upcoming"
+                                    ]);
                                   },
                                   child: const Text(
                                     'show all',
@@ -259,13 +240,6 @@ class _AllTasksState extends State<AllTasks> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                     ),
-                                    Text(
-                                      '3/6 done',
-                                      style: TextStyle(
-                                          color: Color(0xff297687),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(
@@ -281,9 +255,11 @@ class _AllTasksState extends State<AllTasks> {
                                       ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pushNamed(
-                                        '/SectionTask',
-                                        arguments: Status.Completed);
+                                    Navigator.of(context)
+                                        .pushNamed('/SectionTask', arguments: [
+                                      Status.Completed,
+                                      "Completed"
+                                    ]);
                                   },
                                   child: const Text(
                                     'show all',

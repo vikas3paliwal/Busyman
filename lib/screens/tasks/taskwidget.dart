@@ -151,8 +151,8 @@ class _TaskWidgetState extends State<TaskWidget> {
                                 ),
                                 actions: [
                                   ElevatedButton(
-                                      onPressed: () {
-                                        taskprovider.deleteTask(e.id);
+                                      onPressed: () async {
+                                        await taskprovider.deleteTask(e.id);
                                         Navigator.of(context).pop();
                                       },
                                       child: Text('Yes')),
@@ -173,10 +173,10 @@ class _TaskWidgetState extends State<TaskWidget> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                     controlAffinity: ListTileControlAffinity.leading,
                     value: e.completed,
-                    onChanged: (val) {
-                      setState(() {
-                        e.completed = val!;
-                      });
+                    onChanged: (val) async {
+                      e.completed = val!;
+                      await taskprovider.updateTask(e);
+                      setState(() {});
                     },
                     tileColor: const Color(0xffF3F3F3),
                     dense: true,

@@ -3,11 +3,50 @@ import 'dart:convert';
 import 'package:busyman/models/reminder.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class Reminderprovider extends ChangeNotifier {
+  DateFormat formatter = DateFormat('dd MMM, yyyy');
   List<Reminder> _reminders = [];
   List<Reminder> get reminders {
     return [..._reminders];
+  }
+
+  Map<int, List<Reminder>> dateViseReminders = {
+    0: [],
+    1: [],
+    2: [],
+    3: [],
+    4: [],
+    5: [],
+  };
+
+  fetchDateVise(DateTime date) {
+    DateTime day1 = date.subtract(const Duration(days: 2));
+    DateTime day2 = date.subtract(const Duration(days: 1));
+    DateTime day3 = date;
+    DateTime day4 = date.add(const Duration(days: 1));
+    DateTime day5 = date.add(const Duration(days: 2));
+    DateTime day6 = date.add(const Duration(days: 3));
+    dateViseReminders[0] = _reminders
+        .where((element) => element.date == formatter.format(day1))
+        .toList();
+    dateViseReminders[1] = _reminders
+        .where((element) => element.date == formatter.format(day2))
+        .toList();
+    dateViseReminders[2] = _reminders
+        .where((element) => element.date == formatter.format(day3))
+        .toList();
+    dateViseReminders[3] = _reminders
+        .where((element) => element.date == formatter.format(day4))
+        .toList();
+    dateViseReminders[4] = _reminders
+        .where((element) => element.date == formatter.format(day5))
+        .toList();
+    dateViseReminders[5] = _reminders
+        .where((element) => element.date == formatter.format(day6))
+        .toList();
+    notifyListeners();
   }
 
   Future<void> addReminder(Reminder reminder) async {

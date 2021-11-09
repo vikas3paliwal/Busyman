@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SectionTaskScreen extends StatefulWidget {
-  final Status? status;
-  SectionTaskScreen({this.status});
+  final List? list;
+  SectionTaskScreen({this.list});
 
   @override
   _SectionTaskScreenState createState() => _SectionTaskScreenState();
@@ -23,13 +23,13 @@ class _SectionTaskScreenState extends State<SectionTaskScreen> {
   Widget build(BuildContext context) {
     _app = App(context);
     final list =
-        Provider.of<TaskProvider>(context).findListByStatus(widget.status!);
+        Provider.of<TaskProvider>(context).findListByStatus(widget.list![0]);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          'Upcoming Tasks',
-          style: TextStyle(color: Color(0xff297687)),
+        title: Text(
+          widget.list![1],
+          style: const TextStyle(color: Color(0xff297687)),
         ),
         leading: IconButton(
           icon: const Icon(
@@ -111,17 +111,10 @@ class _SectionTaskScreenState extends State<SectionTaskScreen> {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text(
-                            'Today',
-                            style: TextStyle(
-                                color: Color(0xff297687),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '10 Task',
-                            style: TextStyle(
+                            '${list.length} Task',
+                            style: const TextStyle(
                                 color: Color(0xff297687),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400),

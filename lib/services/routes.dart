@@ -29,7 +29,7 @@ class RouteGenerator {
       case '/SectionTask':
         return MaterialPageRoute(
             builder: (_) => SectionTaskScreen(
-                  status: args as Status,
+                  list: args as List,
                 ));
       case '/Reminders':
         return MaterialPageRoute(builder: (_) => const AllReminders());

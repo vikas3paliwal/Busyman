@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 
 class ReminderWidget extends StatelessWidget {
   String? id;
-  ReminderWidget({this.id});
+  DateTime? date;
+  ReminderWidget({this.id, this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +39,10 @@ class ReminderWidget extends StatelessWidget {
                     ),
                     actions: [
                       ElevatedButton(
-                          onPressed: () {
-                            reminderProvider.deleteReminder(id!);
+                          onPressed: () async {
+                            await reminderProvider.deleteReminder(id!);
+                            reminderProvider.fetchDateVise(date!);
+
                             Navigator.of(context).pop();
                           },
                           child: const Text('Yes')),

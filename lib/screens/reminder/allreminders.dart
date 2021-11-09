@@ -2,6 +2,7 @@ import 'package:busyman/provider/reminderprovider.dart';
 import 'package:busyman/screens/reminder/reminderwidget.dart';
 import 'package:busyman/services/sizeconfig.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AllReminders extends StatefulWidget {
@@ -18,6 +19,18 @@ class _AllRemindersState extends State<AllReminders>
   bool initial = true;
   bool isLoading = false;
   late TabController _controller;
+  DateTime? currentDay = DateTime.now();
+  DateFormat formatter = DateFormat('dd MMM, yyyy');
+  Map<int, String?> weekdays = const {
+    1: "Mon",
+    2: "Tue",
+    3: "Wed",
+    4: "Thu",
+    5: "Fri",
+    6: "Sat",
+    7: "Sun"
+  };
+
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
@@ -25,13 +38,16 @@ class _AllRemindersState extends State<AllReminders>
       setState(() {
         isLoading = true;
       });
-      Future.delayed(Duration.zero).whenComplete(() async =>
-          await Provider.of<Reminderprovider>(context, listen: false)
-              .fetchReminders()
-              .whenComplete(() => setState(() {
-                    isLoading = false;
-                  })));
-      _controller = TabController(length: 6, vsync: this);
+      Future.delayed(Duration.zero).whenComplete(() async {
+        await Provider.of<Reminderprovider>(context, listen: false)
+            .fetchReminders()
+            .whenComplete(() => setState(() {
+                  Provider.of<Reminderprovider>(context, listen: false)
+                      .fetchDateVise(currentDay!);
+                  isLoading = false;
+                }));
+      });
+      _controller = TabController(length: 6, vsync: this, initialIndex: 2);
     }
     initial = false;
     super.didChangeDependencies();
@@ -46,7 +62,7 @@ class _AllRemindersState extends State<AllReminders>
 
   @override
   Widget build(BuildContext context) {
-    final reminders = Provider.of<Reminderprovider>(context).reminders;
+    final reminders = Provider.of<Reminderprovider>(context);
     _app = App(context);
     return Scaffold(
       body: Column(
@@ -86,21 +102,36 @@ class _AllRemindersState extends State<AllReminders>
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                DropdownButtonHideUnderline(
-                                  child: DropdownButton(
-                                    icon: Image.asset(
-                                      'assets/icons/downarrow.png',
-                                      height: 15,
-                                      width: 15,
-                                      color: Colors.white,
-                                    ),
-                                    items: const [
-                                      DropdownMenuItem(
-                                          child: Text('22 Oct 2021',
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w700)))
+                                TextButton(
+                                  onPressed: () async {
+                                    DateTime? selectedDate =
+                                        await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime.now(),
+                                            lastDate: DateTime(2050));
+                                    if (selectedDate != null) {
+                                      setState(() {
+                                        currentDay = selectedDate;
+                                        Provider.of<Reminderprovider>(context,
+                                                listen: false)
+                                            .fetchDateVise(currentDay!);
+                                      });
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(formatter.format(currentDay!),
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700)),
+                                      Image.asset(
+                                        'assets/icons/downarrow.png',
+                                        height: 15,
+                                        width: 15,
+                                        color: Colors.white,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -126,14 +157,21 @@ class _AllRemindersState extends State<AllReminders>
                       tabs: [
                         Tab(
                           child: Column(
-                            children: const [
-                              Text('Mon',
-                                  style: TextStyle(
+                            children: [
+                              Text(
+                                  currentDay!.weekday - 2 > 0
+                                      ? weekdays[currentDay!.weekday - 2]!
+                                      : weekdays[currentDay!.weekday - 2 + 7]!,
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                   )),
-                              Text('20',
-                                  style: TextStyle(
+                              Text(
+                                  currentDay!
+                                      .subtract(const Duration(days: 2))
+                                      .day
+                                      .toString(),
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                   ))
@@ -142,14 +180,21 @@ class _AllRemindersState extends State<AllReminders>
                         ),
                         Tab(
                           child: Column(
-                            children: const [
-                              Text('Tue',
-                                  style: TextStyle(
+                            children: [
+                              Text(
+                                  currentDay!.weekday - 1 > 0
+                                      ? weekdays[currentDay!.weekday - 1]!
+                                      : weekdays[currentDay!.weekday - 1 + 7]!,
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                   )),
-                              Text('21',
-                                  style: TextStyle(
+                              Text(
+                                  currentDay!
+                                      .subtract(const Duration(days: 1))
+                                      .day
+                                      .toString(),
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                   ))
@@ -166,15 +211,15 @@ class _AllRemindersState extends State<AllReminders>
                             width: 80,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text('Wed',
-                                    style: TextStyle(
+                              children: [
+                                Text(weekdays[currentDay!.weekday]!,
+                                    style: const TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w700,
                                       color: Color(0xff205072),
                                     )),
-                                Text('22',
-                                    style: TextStyle(
+                                Text(currentDay!.day.toString(),
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                       color: Color(0xff205072),
@@ -185,14 +230,21 @@ class _AllRemindersState extends State<AllReminders>
                         ),
                         Tab(
                           child: Column(
-                            children: const [
-                              Text('Thu',
-                                  style: TextStyle(
+                            children: [
+                              Text(
+                                  currentDay!.weekday + 1 <= 7
+                                      ? weekdays[currentDay!.weekday + 1]!
+                                      : weekdays[currentDay!.weekday + 1 - 7]!,
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                   )),
-                              Text('23',
-                                  style: TextStyle(
+                              Text(
+                                  currentDay!
+                                      .add(const Duration(days: 1))
+                                      .day
+                                      .toString(),
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                   ))
@@ -201,14 +253,21 @@ class _AllRemindersState extends State<AllReminders>
                         ),
                         Tab(
                           child: Column(
-                            children: const [
-                              Text('Fri',
-                                  style: TextStyle(
+                            children: [
+                              Text(
+                                  currentDay!.weekday + 2 <= 7
+                                      ? weekdays[currentDay!.weekday + 2]!
+                                      : weekdays[currentDay!.weekday + 2 - 7]!,
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                   )),
-                              Text('24',
-                                  style: TextStyle(
+                              Text(
+                                  currentDay!
+                                      .add(const Duration(days: 2))
+                                      .day
+                                      .toString(),
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                   ))
@@ -217,14 +276,21 @@ class _AllRemindersState extends State<AllReminders>
                         ),
                         Tab(
                           child: Column(
-                            children: const [
-                              Text('Sat',
-                                  style: TextStyle(
+                            children: [
+                              Text(
+                                  currentDay!.weekday + 3 <= 7
+                                      ? weekdays[currentDay!.weekday + 3]!
+                                      : weekdays[currentDay!.weekday + 3 - 7]!,
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                   )),
-                              Text('25',
-                                  style: TextStyle(
+                              Text(
+                                  currentDay!
+                                      .add(const Duration(days: 3))
+                                      .day
+                                      .toString(),
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                   ))
@@ -239,32 +305,106 @@ class _AllRemindersState extends State<AllReminders>
           SizedBox(
             height: _app.appVerticalPadding(3.5),
           ),
-          const Text(
-            '4/10 done',
-            style: TextStyle(
-                color: Color(0xff297687),
-                fontSize: 14,
-                fontWeight: FontWeight.w400),
-          ),
           Expanded(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: ListView.builder(
-                itemCount: reminders.length,
-                itemBuilder: (ctx, i) {
-                  return reminders
-                      .map((e) => Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              ReminderWidget(id: e.id),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                            ],
-                          ))
-                      .toList()[i];
-                }),
-          )),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TabBarView(controller: _controller, children: [
+                ListView.builder(
+                    itemCount: reminders.dateViseReminders[0]!.length,
+                    itemBuilder: (ctx, i) {
+                      return reminders.dateViseReminders[0]!
+                          .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ReminderWidget(
+                                    id: e.id,
+                                    date: currentDay,
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                              ))
+                          .toList()[i];
+                    }),
+                ListView.builder(
+                    itemCount: reminders.dateViseReminders[1]!.length,
+                    itemBuilder: (ctx, i) {
+                      return reminders.dateViseReminders[1]!
+                          .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ReminderWidget(id: e.id, date: currentDay),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                              ))
+                          .toList()[i];
+                    }),
+                ListView.builder(
+                    itemCount: reminders.dateViseReminders[2]!.length,
+                    itemBuilder: (ctx, i) {
+                      return reminders.dateViseReminders[2]!
+                          .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ReminderWidget(id: e.id, date: currentDay),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                              ))
+                          .toList()[i];
+                    }),
+                ListView.builder(
+                    itemCount: reminders.dateViseReminders[3]!.length,
+                    itemBuilder: (ctx, i) {
+                      return reminders.dateViseReminders[3]!
+                          .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ReminderWidget(id: e.id, date: currentDay),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                              ))
+                          .toList()[i];
+                    }),
+                ListView.builder(
+                    itemCount: reminders.dateViseReminders[4]!.length,
+                    itemBuilder: (ctx, i) {
+                      return reminders.dateViseReminders[4]!
+                          .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ReminderWidget(id: e.id, date: currentDay),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                              ))
+                          .toList()[i];
+                    }),
+                ListView.builder(
+                    itemCount: reminders.dateViseReminders[5]!.length,
+                    itemBuilder: (ctx, i) {
+                      return reminders.dateViseReminders[5]!
+                          .map((e) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  ReminderWidget(id: e.id, date: currentDay),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                              ))
+                          .toList()[i];
+                    }),
+              ]),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

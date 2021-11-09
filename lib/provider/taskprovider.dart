@@ -75,6 +75,16 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateTask(Task task) async {
+    try {
+      await FirebaseDatabase.instance
+          .reference()
+          .child('Users/641Wbl9iOLe09ecDYKG7qUKtfz92/Tasks/${task.id}')
+          .update({"completed": task.completed});
+      notifyListeners();
+    } catch (e) {}
+  }
+
   Future<void> fetchTasks() async {
     if (_tasks.isEmpty) {
       final tasks = await FirebaseDatabase.instance
