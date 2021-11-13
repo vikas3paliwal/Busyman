@@ -1,6 +1,7 @@
 import 'package:busyman/models/reminder.dart';
 import 'package:busyman/provider/reminderprovider.dart';
 import 'package:busyman/screens/tasks/taskfilters.dart';
+import 'package:busyman/services/notification_service.dart';
 import 'package:busyman/services/sizeconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -357,6 +358,15 @@ class _AddReminderState extends State<AddReminder> {
                             category: category,
                           );
                           reminderProvider.addReminder(reminder);
+                          DateTime selectedDate =
+                              DateFormat('dd MMM, yyyy').parse(reminder.date);
+                          Duration days =
+                              DateTime.now().difference(selectedDate);
+                          NotificationService().scheduleNotification(
+                            reminder.reminderName,
+                            reminder.reminderName,
+                            days,
+                          );
 
                           Navigator.of(context).pop();
                         }

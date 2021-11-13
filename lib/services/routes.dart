@@ -6,6 +6,7 @@ import 'package:busyman/screens/reminder/allreminders.dart';
 import 'package:busyman/screens/reminder/editreminder.dart';
 import 'package:busyman/screens/tasks/addtaskscreen.dart';
 import 'package:busyman/screens/tasks/alltasks.dart';
+import 'package:busyman/screens/tasks/alltasks1.dart';
 import 'package:busyman/screens/tasks/editTaskScreen.dart';
 import 'package:busyman/screens/tasks/sectiontaskscreen.dart';
 import 'package:busyman/screens/tasks/taskdetails.dart';
@@ -26,11 +27,11 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => AddTask());
       case '/TaskDetail':
         return MaterialPageRoute(builder: (_) => const TaskDetail());
-      case '/SectionTask':
-        return MaterialPageRoute(
-            builder: (_) => SectionTaskScreen(
-                  list: args as List,
-                ));
+      // case '/SectionTask':
+      //   return MaterialPageRoute(
+      //       builder: (_) => SectionTaskScreen(
+      //             list: args as List,
+      //           ));
       case '/Reminders':
         return MaterialPageRoute(builder: (_) => const AllReminders());
       case '/AddReminder':

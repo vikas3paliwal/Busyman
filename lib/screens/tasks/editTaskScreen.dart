@@ -21,14 +21,10 @@ class _EditTaskState extends State<EditTask> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _namecontroller = TextEditingController();
   TextEditingController _descriptioncontroller = TextEditingController();
-  TextEditingController _startDatecontroller = TextEditingController();
-  TextEditingController _startTimecontroller = TextEditingController();
-  TextEditingController _endDatecontroller = TextEditingController();
-  TextEditingController _endTimecontroller = TextEditingController();
   late String category = '';
   late List<String> workingFor = [];
   late List<String> allocatedTo = [];
-  bool priority = false;
+  late List<String> reference = [];
   bool initial = true;
   bool isLoading = false;
   DateFormat formatter = DateFormat('dd MMM, yyyy');
@@ -47,10 +43,10 @@ class _EditTaskState extends State<EditTask> {
   }
 
   Future<List<String>> showContacts(BuildContext context) async {
-    Map<Contact, bool> contacts = {};
+    Map<String, bool> contacts = {};
     List<String> contact = [];
     _contacts?.forEach((val) {
-      contacts[val] = false;
+      contacts[val.displayName] = false;
     });
     showDialog(
       context: context,
@@ -65,7 +61,7 @@ class _EditTaskState extends State<EditTask> {
               onPressed: () {
                 contacts.forEach((key, value) {
                   if (value) {
-                    contact.add(key.displayName);
+                    contact.add(key);
                   }
                 });
 
@@ -109,14 +105,10 @@ class _EditTaskState extends State<EditTask> {
           Provider.of<TaskProvider>(context, listen: false).findTask(widget.id);
       _namecontroller.text = task.taskName;
       _descriptioncontroller.text = task.description;
-      _startDatecontroller.text = task.startDate;
-      _startTimecontroller.text = task.startTime;
-      _endDatecontroller.text = task.endDate;
-      _endTimecontroller.text = task.endTime;
       category = task.category;
       workingFor = task.workingFor;
       allocatedTo = task.allocatedTo;
-      priority = task.priority;
+      reference = task.reference;
     }
     initial = false;
     // TODO: implement didChangeDependencies
@@ -128,11 +120,6 @@ class _EditTaskState extends State<EditTask> {
     // TODO: implement dispose
     _namecontroller.dispose();
     _descriptioncontroller.dispose();
-    _startDatecontroller.dispose();
-    _startTimecontroller.dispose();
-    _endDatecontroller.dispose();
-    _endTimecontroller.dispose();
-
     super.dispose();
   }
 
@@ -189,166 +176,166 @@ class _EditTaskState extends State<EditTask> {
                   SizedBox(
                     height: _app.appVerticalPadding(2.0),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: TextFormField(
-                        readOnly: true,
-                        controller: _startDatecontroller,
-                        validator: (str) {
-                          if (str == null || str.isEmpty) {
-                            return 'This field can not be empty';
-                          }
-                        },
-                        decoration: InputDecoration(
-                            label: const Text('Start Date'),
-                            suffixIcon: IconButton(
-                                onPressed: () async {
-                                  String text;
-                                  DateTime? selectedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now(),
-                                      lastDate: DateTime(2050));
-                                  if (selectedDate != null) {
-                                    text = formatter.format(selectedDate);
-                                    _startDatecontroller.text = text;
-                                  }
-                                },
-                                icon: const Icon(Icons.date_range))),
-                      )),
-                      const SizedBox(
-                        width: 30,
-                      ),
-                      Expanded(
-                          child: TextFormField(
-                        readOnly: true,
-                        controller: _startTimecontroller,
-                        decoration: InputDecoration(
-                          label: const Text('Start Time'),
-                          suffixIcon: IconButton(
-                              onPressed: () async {
-                                String text;
-                                TimeOfDay? time = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                    builder: (context, childWidget) {
-                                      return MediaQuery(
-                                          data: MediaQuery.of(context).copyWith(
-                                              alwaysUse24HourFormat: false),
-                                          child: childWidget!);
-                                    });
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //         child: TextFormField(
+                  //       readOnly: true,
+                  //       controller: _startDatecontroller,
+                  //       validator: (str) {
+                  //         if (str == null || str.isEmpty) {
+                  //           return 'This field can not be empty';
+                  //         }
+                  //       },
+                  //       decoration: InputDecoration(
+                  //           label: const Text('Start Date'),
+                  //           suffixIcon: IconButton(
+                  //               onPressed: () async {
+                  //                 String text;
+                  //                 DateTime? selectedDate = await showDatePicker(
+                  //                     context: context,
+                  //                     initialDate: DateTime.now(),
+                  //                     firstDate: DateTime.now(),
+                  //                     lastDate: DateTime(2050));
+                  //                 if (selectedDate != null) {
+                  //                   text = formatter.format(selectedDate);
+                  //                   _startDatecontroller.text = text;
+                  //                 }
+                  //               },
+                  //               icon: const Icon(Icons.date_range))),
+                  //     )),
+                  //     const SizedBox(
+                  //       width: 30,
+                  //     ),
+                  //     Expanded(
+                  //         child: TextFormField(
+                  //       readOnly: true,
+                  //       controller: _startTimecontroller,
+                  //       decoration: InputDecoration(
+                  //         label: const Text('Start Time'),
+                  //         suffixIcon: IconButton(
+                  //             onPressed: () async {
+                  //               String text;
+                  //               TimeOfDay? time = await showTimePicker(
+                  //                   context: context,
+                  //                   initialTime: TimeOfDay.now(),
+                  //                   builder: (context, childWidget) {
+                  //                     return MediaQuery(
+                  //                         data: MediaQuery.of(context).copyWith(
+                  //                             alwaysUse24HourFormat: false),
+                  //                         child: childWidget!);
+                  //                   });
 
-                                if (time != null) {
-                                  print(time.format(context));
-                                  if (time.hour > 12) {
-                                    _startTimecontroller.text =
-                                        (time.hour - 12).toString() +
-                                            ' : ' +
-                                            time.minute.toString() +
-                                            ' ' +
-                                            'pm';
-                                  } else {
-                                    _startTimecontroller.text =
-                                        (time.hour.toString().length == 1
-                                                ? ('0' + time.hour.toString())
-                                                : time.hour.toString()) +
-                                            ' : ' +
-                                            time.minute.toString() +
-                                            ' ' +
-                                            'am';
-                                  }
-                                }
-                              },
-                              icon: const Icon(Icons.watch_later)),
-                        ),
-                        validator: (str) {
-                          if (str == null || str.isEmpty) {
-                            return 'This field can not be empty';
-                          }
-                        },
-                      ))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: TextFormField(
-                        readOnly: true,
-                        controller: _endDatecontroller,
-                        decoration: InputDecoration(
-                            label: const Text('End Date'),
-                            suffixIcon: IconButton(
-                                onPressed: () async {
-                                  String text;
-                                  DateTime? selectedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now(),
-                                      lastDate: DateTime(2050));
-                                  if (selectedDate != null) {
-                                    text = formatter.format(selectedDate);
-                                    _endDatecontroller.text = text;
-                                  }
-                                },
-                                icon: const Icon(Icons.date_range))),
-                        validator: (str) {
-                          if (str == null || str.isEmpty) {
-                            return 'This field can not be empty';
-                          }
-                        },
-                      )),
-                      const SizedBox(
-                        width: 30,
-                      ),
-                      Expanded(
-                          child: TextFormField(
-                        readOnly: true,
-                        controller: _endTimecontroller,
-                        decoration: InputDecoration(
-                          label: const Text('End time'),
-                          suffixIcon: IconButton(
-                              onPressed: () async {
-                                TimeOfDay? time = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                    builder: (context, childWidget) {
-                                      return MediaQuery(
-                                          data: MediaQuery.of(context).copyWith(
-                                              alwaysUse24HourFormat: false),
-                                          child: childWidget!);
-                                    });
+                  //               if (time != null) {
+                  //                 print(time.format(context));
+                  //                 if (time.hour > 12) {
+                  //                   _startTimecontroller.text =
+                  //                       (time.hour - 12).toString() +
+                  //                           ' : ' +
+                  //                           time.minute.toString() +
+                  //                           ' ' +
+                  //                           'pm';
+                  //                 } else {
+                  //                   _startTimecontroller.text =
+                  //                       (time.hour.toString().length == 1
+                  //                               ? ('0' + time.hour.toString())
+                  //                               : time.hour.toString()) +
+                  //                           ' : ' +
+                  //                           time.minute.toString() +
+                  //                           ' ' +
+                  //                           'am';
+                  //                 }
+                  //               }
+                  //             },
+                  //             icon: const Icon(Icons.watch_later)),
+                  //       ),
+                  //       validator: (str) {
+                  //         if (str == null || str.isEmpty) {
+                  //           return 'This field can not be empty';
+                  //         }
+                  //       },
+                  //     ))
+                  //   ],
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //         child: TextFormField(
+                  //       readOnly: true,
+                  //       controller: _endDatecontroller,
+                  //       decoration: InputDecoration(
+                  //           label: const Text('End Date'),
+                  //           suffixIcon: IconButton(
+                  //               onPressed: () async {
+                  //                 String text;
+                  //                 DateTime? selectedDate = await showDatePicker(
+                  //                     context: context,
+                  //                     initialDate: DateTime.now(),
+                  //                     firstDate: DateTime.now(),
+                  //                     lastDate: DateTime(2050));
+                  //                 if (selectedDate != null) {
+                  //                   text = formatter.format(selectedDate);
+                  //                   _endDatecontroller.text = text;
+                  //                 }
+                  //               },
+                  //               icon: const Icon(Icons.date_range))),
+                  //       validator: (str) {
+                  //         if (str == null || str.isEmpty) {
+                  //           return 'This field can not be empty';
+                  //         }
+                  //       },
+                  //     )),
+                  //     const SizedBox(
+                  //       width: 30,
+                  //     ),
+                  //     Expanded(
+                  //         child: TextFormField(
+                  //       readOnly: true,
+                  //       controller: _endTimecontroller,
+                  //       decoration: InputDecoration(
+                  //         label: const Text('End time'),
+                  //         suffixIcon: IconButton(
+                  //             onPressed: () async {
+                  //               TimeOfDay? time = await showTimePicker(
+                  //                   context: context,
+                  //                   initialTime: TimeOfDay.now(),
+                  //                   builder: (context, childWidget) {
+                  //                     return MediaQuery(
+                  //                         data: MediaQuery.of(context).copyWith(
+                  //                             alwaysUse24HourFormat: false),
+                  //                         child: childWidget!);
+                  //                   });
 
-                                if (time != null) {
-                                  if (time.hour > 12) {
-                                    _endTimecontroller.text =
-                                        (time.hour - 12).toString() +
-                                            ' : ' +
-                                            time.minute.toString() +
-                                            ' ' +
-                                            'pm';
-                                  } else {
-                                    _endTimecontroller.text =
-                                        (time.hour.toString().length == 1
-                                                ? ('0' + time.hour.toString())
-                                                : time.hour.toString()) +
-                                            ' : ' +
-                                            time.minute.toString() +
-                                            ' ' +
-                                            'am';
-                                  }
-                                }
-                              },
-                              icon: const Icon(Icons.watch_later)),
-                        ),
-                        validator: (str) {
-                          if (str == null || str.isEmpty) {
-                            return 'This field can not be empty';
-                          }
-                        },
-                      ))
-                    ],
-                  ),
+                  //               if (time != null) {
+                  //                 if (time.hour > 12) {
+                  //                   _endTimecontroller.text =
+                  //                       (time.hour - 12).toString() +
+                  //                           ' : ' +
+                  //                           time.minute.toString() +
+                  //                           ' ' +
+                  //                           'pm';
+                  //                 } else {
+                  //                   _endTimecontroller.text =
+                  //                       (time.hour.toString().length == 1
+                  //                               ? ('0' + time.hour.toString())
+                  //                               : time.hour.toString()) +
+                  //                           ' : ' +
+                  //                           time.minute.toString() +
+                  //                           ' ' +
+                  //                           'am';
+                  //                 }
+                  //               }
+                  //             },
+                  //             icon: const Icon(Icons.watch_later)),
+                  //       ),
+                  //       validator: (str) {
+                  //         if (str == null || str.isEmpty) {
+                  //           return 'This field can not be empty';
+                  //         }
+                  //       },
+                  //     ))
+                  //   ],
+                  // ),
                   SizedBox(
                     height: _app.appVerticalPadding(2.5),
                   ),
@@ -467,28 +454,60 @@ class _EditTaskState extends State<EditTask> {
                                     .toList()[i];
                               }),
                         ),
+
                   SizedBox(
                     height: _app.appVerticalPadding(2.0),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Set Priority',
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff959595)),
-                      ),
-                      Switch(
-                          value: priority,
-                          onChanged: (val) {
-                            setState(() {
-                              priority = val;
-                            });
-                          })
-                    ],
+                  const Text(
+                    'Reference',
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff959595)),
                   ),
+                  SizedBox(
+                    height: _app.appVerticalPadding(1.0),
+                  ),
+                  reference.isEmpty
+                      ? TextButton(
+                          onPressed: () async {
+                            await _fetchContacts();
+                            await showContacts(context)
+                                .then((value) => setState(() {
+                                      reference = value;
+                                    }));
+                          },
+                          child: Container(
+                            height: _app.appHeight(4),
+                            width: _app.appWidth(20),
+                            child: const Center(
+                                child: const Text(
+                              'Add',
+                              style: TextStyle(color: const Color(0xff297687)),
+                            )),
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: const Color(0xff297687)),
+                                borderRadius: BorderRadius.circular(12)),
+                          ))
+                      : SizedBox(
+                          height: _app.appHeight(10),
+                          width: _app.appWidth(50),
+                          child: ListView.builder(
+                              itemCount: reference.length,
+                              itemBuilder: (ctx, i) {
+                                return reference
+                                    .map((e) => Text(
+                                          e,
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color(0xff2E2E2E)),
+                                        ))
+                                    .toList()[i];
+                              }),
+                        ),
+
                   isLoading
                       ? const Center(child: const CircularProgressIndicator())
                       : TextButton(
@@ -502,22 +521,16 @@ class _EditTaskState extends State<EditTask> {
                                   id: widget.id,
                                   taskName: _namecontroller.text,
                                   description: _descriptioncontroller.text,
-                                  startDate: _startDatecontroller.text,
-                                  startTime: _startTimecontroller.text,
-                                  endDate: _endDatecontroller.text,
-                                  endTime: _endTimecontroller.text,
                                   workingFor: workingFor,
                                   allocatedTo: allocatedTo,
-                                  priority: priority,
                                   category: category,
-                                  completed: Provider.of<TaskProvider>(context,
-                                          listen: false)
+                                  reference: reference,
+                                  location:
+                                      taskProvider.findTask(widget.id).location,
+                                  currentDateTime: taskProvider
                                       .findTask(widget.id)
-                                      .completed);
-                              task.status = Provider.of<TaskProvider>(context,
-                                      listen: false)
-                                  .findTask(widget.id)
-                                  .status;
+                                      .currentDateTime);
+
                               taskProvider.editTask(task).whenComplete(() {
                                 setState(() {
                                   isLoading = false;
